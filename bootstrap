@@ -1,0 +1,26 @@
+#!/bin/ksh
+
+#
+
+if ! test -f /tmp/ports.tar.gz; then
+  cd /tmp
+  ftp ftp://ftp.openbsd.org/pub/OpenBSD/5.4/ports.tar.gz
+  cd /usr
+  tar xzf /tmp/ports.tar.gz
+fi
+
+#
+
+ports='
+  devel/git
+  net/curl
+  net/rsync
+  net/wget
+'
+
+for port in $ports; do
+  cd /usr/ports/$port
+  make install clean
+done
+
+#
