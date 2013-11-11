@@ -10,11 +10,16 @@ if ! test -f /tmp/ports.tar.gz; then
 fi
 
 #
+# Missing:
+#   - tmux
+#
 
 ports='
   devel/git
   net/curl
+  net/emacs
   net/rsync
+  lang/ruby
   net/wget
 '
 
