@@ -4,7 +4,7 @@
 
 openbsd_base_url='http://mirror.ox.ac.uk/pub/OpenBSD'
 openbsd_platform=`machine -a`
-openbsd_version=`uname -v`
+openbsd_version=`uname -r`
 package_specs='
   curl
   emacs-24.3-no_x11
