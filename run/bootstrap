@@ -8,6 +8,7 @@ openbsd_version=`uname -r`
 package_specs='
   curl
   emacs-24.3-no_x11
+  git
   nginx-1.5.0
   node
   python-2.7.5
@@ -49,13 +50,23 @@ if test -d /usr/ports; then
 EOF
 else
   cat <<EOF 1>&2
-# Installing ports from $ports_url
+# Downloading ports from $ports_url
 EOF
   cd /tmp
   wget -c -O $ports_local_path $ports_url
+  cat <<EOF 1>&2
+# Installing ports
+EOF
   cd /usr
   tar xzf $ports_local_path
   rm -f $ports_local_path
 fi
+
+#
+
+cat <<EOF 1>&2
+# Installing Chef via gem
+EOF
+gem20 install --no-rdoc --no-ri chef
 
 #
