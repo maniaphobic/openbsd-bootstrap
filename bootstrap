@@ -2,57 +2,60 @@
 
 #
 
-packages_base_url='ftp://ftp.openbsd.org/pub/OpenBSD/5.4/packages/i386/'
-
-packages_versions='
-  curl,7.26.0p3
-  emacs,24.3-no_x11
-  nginx,1.5.0
-  node,0.10.12
-  python,2.7.5
-  python,3.3.2
-  rsync,3.0.9p3
-  ruby,2.0.0.247
-  wget,1.14p0
+openbsd_base_url='http://mirror.ox.ac.uk/pub/OpenBSD'
+openbsd_platform=`machine -a`
+openbsd_version=`uname -v`
+package_specs='
+  curl
+  emacs-24.3-no_x11
+  nginx-1.5.0
+  node
+  python-2.7.5
+  python-3.3.2
+  rsync-3.0.9p3
+  ruby-2.0.0.247
+  sqlports
+  wget
 '
+ports_local_path='/tmp/ports.tar.gz'
 
 #
 
-for package_version in $packages_versions; do
-  package_name=`echo $package_version | cut -d, -f1`
-  package_version=`echo $package_version | cut -d, -f2`
-  package_url="${packages_base_url}/${package_name}-${package_version}.tgz"
+openbsd_version_base_url="${openbsd_base_url}/${openbsd_version}"
+
+#
+
+ports_url="${openbsd_version_base_url}/ports.tar.gz"
+packages_base_url="${openbsd_version_base_url}/packages/${openbsd_platform}"
+
+#
+
+export PKG_PATH="$packages_base_url"
+
+#
+
+for package_spec in $package_specs; do
   cat <<EOF 1>&2
-# Installing "$package_name" from $package_url
+# Installing "$package_spec" from $PKG_PATH
 EOF
-  pkg_add $package_url
+  pkg_add $package_spec
 done
 
 #
 
-#DISABLED#if ! test -f /tmp/ports.tar.gz; then
-#DISABLED#  cd /tmp
-#DISABLED#  ftp ftp://ftp.openbsd.org/pub/OpenBSD/5.4/ports.tar.gz
-#DISABLED#  cd /usr
-#DISABLED#  tar xzf /tmp/ports.tar.gz
-#DISABLED#fi
-
-#
-# Missing:
-#
-
-#DISABLED#ports='
-#DISABLED#  devel/git
-#DISABLED#  net/curl
-#DISABLED#  net/emacs
-#DISABLED#  net/rsync
-#DISABLED#  lang/ruby20
-#DISABLED#  net/wget
-#DISABLED#'
-
-#DISABLED#for port in $ports; do
-#DISABLED#  cd /usr/ports/$port
-#DISABLED#  make install clean
-#DISABLED#done
+if test -d /usr/ports; then
+  cat <<EOF 1>&2
+# Ports tree already installed
+EOF
+else
+  cat <<EOF 1>&2
+# Installing ports from $ports_url
+EOF
+  cd /tmp
+  wget -c -O $ports_local_path $ports_url
+  cd /usr
+  tar xzf $ports_local_path
+  rm -f $ports_local_path
+fi
 
 #
