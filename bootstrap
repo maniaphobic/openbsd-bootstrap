@@ -2,30 +2,57 @@
 
 #
 
-if ! test -f /tmp/ports.tar.gz; then
-  cd /tmp
-  ftp ftp://ftp.openbsd.org/pub/OpenBSD/5.4/ports.tar.gz
-  cd /usr
-  tar xzf /tmp/ports.tar.gz
-fi
+packages_base_url='ftp://ftp.openbsd.org/pub/OpenBSD/5.4/packages/i386/'
+
+packages_versions='
+  curl,7.26.0p3
+  emacs,24.3-no_x11
+  nginx,1.5.0
+  node,0.10.12
+  python,2.7.5
+  python,3.3.2
+  rsync,3.0.9p3
+  ruby,2.0.0.247
+  wget,1.14p0
+'
+
+#
+
+for package_version in $packages_versions; do
+  package_name=`echo $package_version | cut -d, -f1`
+  package_version=`echo $package_version | cut -d, -f2`
+  package_url="${packages_base_url}/${package_name}-${package_version}.tgz"
+  cat <<EOF 1>&2
+# Installing "$package_name" from $package_url
+EOF
+  pkg_add $package_url
+done
+
+#
+
+#DISABLED#if ! test -f /tmp/ports.tar.gz; then
+#DISABLED#  cd /tmp
+#DISABLED#  ftp ftp://ftp.openbsd.org/pub/OpenBSD/5.4/ports.tar.gz
+#DISABLED#  cd /usr
+#DISABLED#  tar xzf /tmp/ports.tar.gz
+#DISABLED#fi
 
 #
 # Missing:
-#   - tmux
 #
 
-ports='
-  devel/git
-  net/curl
-  net/emacs
-  net/rsync
-  lang/ruby
-  net/wget
-'
+#DISABLED#ports='
+#DISABLED#  devel/git
+#DISABLED#  net/curl
+#DISABLED#  net/emacs
+#DISABLED#  net/rsync
+#DISABLED#  lang/ruby20
+#DISABLED#  net/wget
+#DISABLED#'
 
-for port in $ports; do
-  cd /usr/ports/$port
-  make install clean
-done
+#DISABLED#for port in $ports; do
+#DISABLED#  cd /usr/ports/$port
+#DISABLED#  make install clean
+#DISABLED#done
 
 #
