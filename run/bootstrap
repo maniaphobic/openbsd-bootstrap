@@ -1,4 +1,12 @@
 #!/bin/ksh
+#________________________________________
+# Date created:			11 Nov. 2013
+# Description:			Bootstrap an OpenBSD host
+#
+
+#________________________________________
+# Define global parameters
+#
 
 #
 
@@ -35,38 +43,86 @@ export PKG_PATH="$packages_base_url"
 
 #
 
-for package_spec in $package_specs; do
+#________________________________________
+# Define functions
+#
+
+#
+# Execute application
+#
+
+function execute_application () {
+
+  #
+  # Install packages
+  # Install ports
+  # Install Chef
+  #
+
+  install_packages
+#DISABLED#  install_ports
+  install_chef
+
+}
+
+#
+# Install Chef
+#
+
+function install_chef () {
+
   cat <<EOF 1>&2
+# Installing Chef
+EOF
+  gem20 install --no-rdoc --no-ri chef
+
+}
+
+#
+# Install packages
+#
+
+function install_packages () {
+
+  for package_spec in $package_specs; do
+    cat <<EOF 1>&2
 # Installing "$package_spec" from $PKG_PATH
 EOF
-  pkg_add $package_spec
-done
+    pkg_add $package_spec
+  done
+
+}
 
 #
+# Install ports
+#
 
-if test -d /usr/ports; then
-  cat <<EOF 1>&2
+function install_ports () {
+
+  if test -d /usr/ports; then
+    cat <<EOF 1>&2
 # Ports tree already installed
 EOF
-else
-  cat <<EOF 1>&2
+  else
+    cat <<EOF 1>&2
 # Downloading ports from $ports_url
 EOF
-  cd /tmp
-  wget -c -O $ports_local_path $ports_url
-  cat <<EOF 1>&2
+    cd /tmp
+    wget -c -O $ports_local_path $ports_url
+    cat <<EOF 1>&2
 # Installing ports
 EOF
-  cd /usr
-  tar xzf $ports_local_path
-  rm -f $ports_local_path
-fi
+    cd /usr
+    tar xzf $ports_local_path
+    rm -f $ports_local_path
+  fi
 
+}
+
+#________________________________________
+# Execute application
 #
 
-cat <<EOF 1>&2
-# Installing Chef via gem
-EOF
-gem20 install --no-rdoc --no-ri chef
+execute_application $*
 
 #
