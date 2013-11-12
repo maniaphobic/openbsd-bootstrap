@@ -16,14 +16,13 @@ openbsd_version=`uname -r`
 package_specs='
   curl
   emacs-24.3-no_x11
+  rsync-3.0.9p3
   git
   nginx-1.5.0
   node
   python-2.7.5
   python-3.3.2
-  rsync-3.0.9p3
   ruby-2.0.0.247
-  sqlports
   wget
 '
 ports_local_path='/tmp/ports.tar.gz'
@@ -39,10 +38,6 @@ packages_base_url="${openbsd_version_base_url}/packages/${openbsd_platform}"
 
 #
 
-export PKG_PATH="$packages_base_url"
-
-#
-
 #________________________________________
 # Define functions
 #
@@ -51,7 +46,15 @@ export PKG_PATH="$packages_base_url"
 # Execute application
 #
 
-function execute_application () {
+function execute_application {
+
+  #
+  # Set the executable path
+  # Set the package path
+  #
+
+  export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
+  export PKG_PATH="$packages_base_url"
 
   #
   # Install packages
@@ -69,7 +72,7 @@ function execute_application () {
 # Install Chef
 #
 
-function install_chef () {
+function install_chef {
 
   cat <<EOF 1>&2
 # Installing Chef
@@ -82,7 +85,7 @@ EOF
 # Install packages
 #
 
-function install_packages () {
+function install_packages {
 
   for package_spec in $package_specs; do
     cat <<EOF 1>&2
@@ -97,7 +100,7 @@ EOF
 # Install ports
 #
 
-function install_ports () {
+function install_ports {
 
   if test -d /usr/ports; then
     cat <<EOF 1>&2
